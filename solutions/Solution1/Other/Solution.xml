@@ -6,7 +6,7 @@
       <LocalizedName description="Solution-1" languagecode="1033" />
     </LocalizedNames>
     <Descriptions />
-    <Version>1.0.0.0</Version>
+    <Version>1.0.0.1</Version>
     <Managed>0</Managed>
     <Publisher>
       <UniqueName>DefaultPublisherorg26f7267e</UniqueName>
@@ -80,6 +80,7 @@
       </Addresses>
     </Publisher>
     <RootComponents>
+      <RootComponent type="1" schemaName="account" behavior="2" />
       <RootComponent type="20" id="{ed2d3ba7-092e-ef11-840a-6045bd0550b5}" behavior="0" />
     </RootComponents>
     <MissingDependencies />
