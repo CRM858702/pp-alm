@@ -76,3 +76,7 @@ jobs:
         solution-target-folder: ${{ github.event.inputs.solution_target_folder}}/${{ github.event.inputs.solution_name }}
         repo-token: ${{ secrets.GITHUB_TOKEN }}
         allow-empty-commit: true
+    - name: Trigger Release Action Workflow
+      uses: ./.github/workflows/release-action-call.yml
+      with:
+        solution-name: ${{ github.event.inputs.solution_name }}
