@@ -78,13 +78,4 @@ jobs:
         repo-token: ${{ secrets.GITHUB_TOKEN }}
         allow-empty-commit: true
 
-    - name: Trigger Reusable Workflow
-      uses: actions/checkout@v2  # Ensure this step is included
-      with:
-        lfs: true
-    
-    - name: Trigger Reusable Workflow
-      uses: ./.github/workflows/release-action-call.yml
-      with:
-        solution_name: ${{ github.event.inputs.solution_name }}
 
