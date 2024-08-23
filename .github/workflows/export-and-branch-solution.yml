@@ -23,6 +23,7 @@ on:
        description: 'folder name to be created and checked in *do not change*'
        required: true
        default: solutions/
+
 env:
 #edit your values here
   ENVIRONMENT_URL: 'https://dev-aliii.crm.dynamics.com/'
@@ -77,7 +78,8 @@ jobs:
         repo-token: ${{ secrets.GITHUB_TOKEN }}
         allow-empty-commit: true
         
-    - name: Trigger Release Action Workflow
+    - name: Trigger Reusable Workflow
       uses: ./.github/workflows/release-action-call.yml
       with:
-        solution-name: ${{ github.event.inputs.solution_name }}
+        solution_name: ${{ github.event.inputs.solution_name }}
+
