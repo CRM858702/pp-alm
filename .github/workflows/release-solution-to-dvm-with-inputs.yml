@@ -1,31 +1,26 @@
 name: release-solution-to-dvm-reusable
-# Reusable workflow
-# convert solution to managed (using a build PowerPlatform environment for the conversion)
-# upload the solution to the GitHub artifacts and deploy to the PROD environment
+
 on:
   workflow_call:
     inputs: 
-      #Do Not change these values
-      #Values are set by the caller
-      #caller sample: release-action-call.ymnl
       solution_name:
         description: 'The solution name.'
         type: string
         default: Solution1       
       solution_shipping_folder:
-        description: 'folder name for staging the exported solution *do not change*'        
+        description: 'Folder name for staging the exported solution *do not change*'        
         type: string
         default: out/ship/
       solution_outbound_folder:
-        description: 'staging the unpacked solution folder before check-in *do not change*'
+        description: 'Staging the unpacked solution folder before check-in *do not change*'
         type: string
         default: out/solutions/
       solution_source_folder: 
-       description: 'folder name to be created and checked in *do not change*'
+       description: 'Folder name to be created and checked in *do not change*'
        type: string
        default: solutions/
       solution_release_folder:
-       description: 'folder where the released binaries are going to be hosted *do not change*'
+       description: 'Folder where the released binaries are going to be hosted *do not change*'
        type: string
        default: out/release
       BUILD_ENVIRONMENT_URL:
@@ -52,14 +47,18 @@ on:
 jobs:
   convert-to-managed:
     runs-on: windows-latest
-    # or you can say runs-on: ubuntu-latest
     env:
       RUNNER_DEBUG: 1
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         lfs: true
+
+    - name: List solution folder contents
+      run: |
+        echo "Listing contents of: ${{ inputs.solution_source_folder}}/${{ inputs.solution_name }}"
+        ls -R ${{ inputs.solution_source_folder}}/${{ inputs.solution_name }}
 
     - name: Pack solution
       uses: microsoft/powerplatform-actions/pack-solution@v0
@@ -68,8 +67,6 @@ jobs:
         solution-file: ${{ inputs.solution_outbound_folder}}/${{ inputs.solution_name }}.zip
         solution-type: Unmanaged
         pack-parameters: --useUnmanagedFileForMissingManaged
-
-
     
     - name: Export solution as managed
       uses: microsoft/powerplatform-actions/export-solution@v0
@@ -83,7 +80,7 @@ jobs:
         solution-output-file: ${{ inputs.solution_shipping_folder}}/${{ inputs.solution_name }}_managed.zip
 
     - name: Upload the ready to ship solution to GH artifact store
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: managedSolutions
         path: ${{ inputs.solution_shipping_folder}}/
@@ -95,7 +92,7 @@ jobs:
       RUNNER_DEBUG: 1
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         lfs: true
 
@@ -104,6 +101,7 @@ jobs:
       with:
         name: managedSolutions
         path: ${{ inputs.solution_release_folder}}
+        
     - name: Import solution to dvm env
       uses: microsoft/powerplatform-actions/import-solution@v0
       with:
