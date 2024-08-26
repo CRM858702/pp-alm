@@ -1,34 +1,39 @@
 name: release-solution-to-dvm-reusable
-
+# Reusable workflow
+# convert solution to managed (using a build PowerPlatform environment for the conversion)
+# upload the solution to the GitHub artifacts and deploy to the PROD environment
 on:
   workflow_call:
     inputs: 
+      #Do Not change these values
+      #Values are set by the caller
+      #caller sample: release-action-call.ymnl
       solution_name:
         description: 'The solution name.'
         type: string
-        default: Solution1       
+        default: ALI_G1       
       solution_shipping_folder:
-        description: 'Folder name for staging the exported solution *do not change*'        
+        description: 'folder name for staging the exported solution *do not change*'        
         type: string
         default: out/ship/
       solution_outbound_folder:
-        description: 'Staging the unpacked solution folder before check-in *do not change*'
+        description: 'staging the unpacked solution folder before check-in *do not change*'
         type: string
         default: out/solutions/
       solution_source_folder: 
-        description: 'Folder name to be created and checked in *do not change*'
-        type: string
-        default: solutions/
+       description: 'folder name to be created and checked in *do not change*'
+       type: string
+       default: solutions/
       solution_release_folder:
-        description: 'Folder where the released binaries are going to be hosted *do not change*'
-        type: string
-        default: out/release
+       description: 'folder where the released binaries are going to be hosted *do not change*'
+       type: string
+       default: out/release
       BUILD_ENVIRONMENT_URL:
         description: 'Build environment url.'
         type: string
         required: true      
       DVM_ENVIRONMENT_URL: 
-        description: 'DvM environment url.'
+        description: 'Dvm environment url.'
         type: string
         required: true
       CLIENT_ID: 
@@ -47,6 +52,7 @@ on:
 jobs:
   convert-to-managed:
     runs-on: windows-latest
+    # or you can say runs-on: ubuntu-latest
     env:
       RUNNER_DEBUG: 1
 
@@ -55,21 +61,23 @@ jobs:
       with:
         lfs: true
 
-    - name: Verify Solution Folder Exists
-      run: |
-        if [ ! -d "${{ inputs.solution_source_folder}}/${{ inputs.solution_name }}" ]; then
-          echo "Solution folder does not exist: ${{ inputs.solution_source_folder}}/${{ inputs.solution_name }}"
-          exit 1
-        fi
-      shell: bash
-
     - name: Pack solution
       uses: microsoft/powerplatform-actions/pack-solution@v0
       with:
         solution-folder: ${{ inputs.solution_source_folder}}/${{ inputs.solution_name }}
         solution-file: ${{ inputs.solution_outbound_folder}}/${{ inputs.solution_name }}.zip
-        solution-type: Both
-        pack-parameters: --useUnmanagedFileForMissingManaged
+        solution-type: Unmanaged
+
+    - name: Import solution as unmanaged to build env
+      uses: microsoft/powerplatform-actions/import-solution@v0
+      with:
+        environment-url: ${{inputs.BUILD_ENVIRONMENT_URL}}
+        app-id: ${{inputs.CLIENT_ID}}
+        client-secret: ${{ secrets.envSecret }}
+        tenant-id: ${{inputs.TENANT_ID}}
+        solution-file: ${{ inputs.solution_outbound_folder}}/${{ inputs.solution_name }}.zip
+        force-overwrite: true
+        publish-changes: true
 
     - name: Export solution as managed
       uses: microsoft/powerplatform-actions/export-solution@v0
@@ -104,7 +112,6 @@ jobs:
       with:
         name: managedSolutions
         path: ${{ inputs.solution_release_folder}}
-
     - name: Import solution to dvm env
       uses: microsoft/powerplatform-actions/import-solution@v0
       with:
@@ -115,4 +122,3 @@ jobs:
         solution-file: ${{ inputs.solution_release_folder}}/${{ inputs.solution_name }}_managed.zip
         force-overwrite: true
         publish-changes: true
-
