@@ -68,7 +68,7 @@ jobs:
       with:
         solution-folder: ${{ inputs.solution_source_folder}}/${{ inputs.solution_name }}
         solution-file: ${{ inputs.solution_outbound_folder}}/${{ inputs.solution_name }}.zip
-        solution-type: Unmanaged
+        solution-type: Both
         pack-parameters: --useUnmanagedFileForMissingManaged
 
     - name: Export solution as managed
