@@ -68,16 +68,7 @@ jobs:
         solution-file: ${{ inputs.solution_outbound_folder}}/${{ inputs.solution_name }}.zip
         solution-type: Unmanaged
 
-    - name: Import solution as unmanaged to build env
-      uses: microsoft/powerplatform-actions/import-solution@v0
-      with:
-        environment-url: ${{inputs.BUILD_ENVIRONMENT_URL}}
-        app-id: ${{inputs.CLIENT_ID}}
-        client-secret: ${{ secrets.envSecret }}
-        tenant-id: ${{inputs.TENANT_ID}}
-        solution-file: ${{ inputs.solution_outbound_folder}}/${{ inputs.solution_name }}.zip
-        force-overwrite: true
-        publish-changes: true
+    
 
     - name: Export solution as managed
       uses: microsoft/powerplatform-actions/export-solution@v0
@@ -122,3 +113,17 @@ jobs:
         solution-file: ${{ inputs.solution_release_folder}}/${{ inputs.solution_name }}_managed.zip
         force-overwrite: true
         publish-changes: true
+
+   
+  Release-solution-ALMLab:
+    uses: ./.github/workflows/release-solution-to-prod-with-inputs.yml
+    with:
+      #You can specify the solution name here
+      solution_name: ALI_G1
+      #Update your values here
+      BUILD_ENVIRONMENT_URL: https://dvm-aliii.crm.dynamics.com/
+      PRODUCTION_ENVIRONMENT_URL: https://prod-aliii.crm.dynamics.com/
+      CLIENT_ID: c9bfe35c-4011-4cea-a0b0-1d9aeb92158d
+      TENANT_ID: cf98c142-3126-40f8-be8d-bef563a8f7a5    
+    secrets:
+      envSecret: ${{ secrets.PowerPlatformSPN }}
