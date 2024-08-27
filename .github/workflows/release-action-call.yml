@@ -9,10 +9,10 @@ permissions:
   contents: write
 jobs:
   Release-solution-ALMLab:
-    uses: ./.github/workflows/release-solution-to-prod-with-inputs.yml
+    uses: ./.github/workflows/release-solution-to-dvm-with-inputs.yml
     with:
       #You can specify the solution name here
-      solution_name: ${{ github.event.inputs.solution_name }}
+      solution_name: ALI_G1
       #Update your values here
       BUILD_ENVIRONMENT_URL: https://dev-aliii.crm.dynamics.com/
       PRODUCTION_ENVIRONMENT_URL: https://dvm-aliii.crm.dynamics.com/
